@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qo(penAPI)", "Qo(penAPI)\Qo(penAPI).csproj", "{DF490EAA-8AD1-4D22-AE93-54B9C48F0A02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qo(penAPI)-Tester", "Qo(penAPI)-Tester\Qo(penAPI)-Tester.csproj", "{0AD67C0D-D4B9-4870-9C8E-47810D9D9ED6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF490EAA-8AD1-4D22-AE93-54B9C48F0A02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF490EAA-8AD1-4D22-AE93-54B9C48F0A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF490EAA-8AD1-4D22-AE93-54B9C48F0A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF490EAA-8AD1-4D22-AE93-54B9C48F0A02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD67C0D-D4B9-4870-9C8E-47810D9D9ED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD67C0D-D4B9-4870-9C8E-47810D9D9ED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD67C0D-D4B9-4870-9C8E-47810D9D9ED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD67C0D-D4B9-4870-9C8E-47810D9D9ED6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
