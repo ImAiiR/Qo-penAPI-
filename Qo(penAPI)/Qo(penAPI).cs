@@ -20,6 +20,8 @@ namespace QopenAPI
         private HttpClient QoHttpClient = new HttpClient();
         private WebClient QoWebClient = new WebClient();
 
+        string baseUrl = "https://www.qobuz.com/api.json/0.2/";
+
         public AppID GetAppID()
         {
             using (QoWebClient)
@@ -97,7 +99,7 @@ namespace QopenAPI
                                     signature = GetMd5Hash(md5Hash, signatureKey);
                                 }
 
-                                string test_url = "https://www.qobuz.com/api.json/0.2/userLibrary/getAlbumsList";
+                                string test_url = baseUrl + "userLibrary/getAlbumsList";
                                 Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
                                 _paramsValue.Add("app_id", app_id);
                                 _paramsValue.Add("user_auth_token", user_auth_token);
@@ -146,7 +148,7 @@ namespace QopenAPI
 
         public User Login(string app_id, string email, string password)
         {
-            string login_url = "https://www.qobuz.com/api.json/0.2/user/login";
+            string login_url = baseUrl + "user/login";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
             _paramsValue.Add("app_id", app_id);
             _paramsValue.Add("email", email);
@@ -159,7 +161,7 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 User user = JsonConvert.DeserializeObject<User>(result);
-                //System.Diagnostics.Trace.WriteLine(result);           <-- Use to view login API response
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
                 return user;
             }
             else
@@ -169,7 +171,55 @@ namespace QopenAPI
             }
         }
 
-        public Stream GetStream(string track_id, string format_id, string app_id, string user_auth_token, string app_secret)
+        public Album AlbumGet(string app_id, string album_id)
+        {
+            string album_url = baseUrl + "album/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("album_id", album_id);
+
+            string _parameterizedURL = CreateParameterizedQuery(album_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Album album = JsonConvert.DeserializeObject<Album>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                return album;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Item TrackGet(string app_id, string track_id)
+        {
+            string track_url = baseUrl + "track/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("track_id", track_id);
+
+            string _parameterizedURL = CreateParameterizedQuery(track_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Item track = JsonConvert.DeserializeObject<Item>(result);
+                System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                return track;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Stream TrackGetFileUrl(string track_id, string format_id, string app_id, string user_auth_token, string app_secret)
         {
             Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             string time = unixTimestamp.ToString();
@@ -181,7 +231,7 @@ namespace QopenAPI
                 signature = GetMd5Hash(md5Hash, signatureKey);
             }
 
-            string stream_url = "https://www.qobuz.com/api.json/0.2/track/getFileUrl";
+            string stream_url = baseUrl + "track/getFileUrl";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
             _paramsValue.Add("request_ts", time);
             _paramsValue.Add("request_sig", signature);
@@ -198,7 +248,7 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 Stream stream = JsonConvert.DeserializeObject<Stream>(result);
-                System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view stream API response
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view stream API response
                 return stream;
             }
             else
@@ -244,11 +294,6 @@ namespace QopenAPI
 
             // Return the hexadecimal string.
             return sBuilder.ToString();
-        }
-
-        public void Log(string text)
-        {
-            Console.WriteLine("Welcome to Qo(penAPI), or a free to use Qobuz API, that is open source, hence the name.");
         }
     }
 }

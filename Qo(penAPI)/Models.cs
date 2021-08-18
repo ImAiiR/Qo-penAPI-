@@ -134,8 +134,17 @@ namespace QopenAPI
         [JsonProperty("performer")]
         public Performer Performer { get; set; }
 
+        [JsonProperty("composer")]
+        public Composer Composer { get; set; }
+
         [JsonProperty("copyright")]
         public string Copyright { get; set; }
+
+        [JsonProperty("isrc")]
+        public string ISRC { get; set; }
+
+        [JsonProperty("audio_info")]
+        public AudioInfo AudioInfo { get; set; }
 
         [JsonProperty("media_number")]
         public int MediaNumber { get; set; }
@@ -170,11 +179,17 @@ namespace QopenAPI
         [JsonProperty("streamable_at")]
         public int StreamableAt { get; set; }
 
+        [JsonProperty("parental_warning")]
+        public bool ParentalWarning { get; set; }
+
         [JsonProperty("maximum_sampling_rate")]
         public double MaximumSamplingRate { get; set; }
 
         [JsonProperty("maximum_bit_depth")]
         public int MaximumBitDepth { get; set; }
+
+        [JsonProperty("maximum_channel_count")]
+        public int MaximumChannelCount { get; set; }
 
         [JsonProperty("hires")]
         public bool Hires { get; set; }
@@ -190,79 +205,6 @@ namespace QopenAPI
 
     }
 
-    public class Album
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("genre")]
-        public Genre Genre { get; set; }
-
-        [JsonProperty("tracks_count")]
-        public int TracksCount { get; set; }
-
-        [JsonProperty("duration")]
-        public int Duration { get; set; }
-
-        [JsonProperty("released_at")]
-        public int ReleasedAt { get; set; }
-
-        [JsonProperty("title")]
-        public string Title { get; set; }
-
-        [JsonProperty("image")]
-        public Image Image { get; set; }
-
-        [JsonProperty("media_count")]
-        public int MediaCount { get; set; }
-
-        [JsonProperty("label")]
-        public Label Label { get; set; }
-
-        [JsonProperty("artist")]
-        public Artist Artist { get; set; }
-
-        [JsonProperty("qobuz_id")]
-        public int QobuzId { get; set; }
-
-        [JsonProperty("popularity")]
-        public double Popularity { get; set; }
-
-        [JsonProperty("purchasable")]
-        public bool Purchasable { get; set; }
-
-        [JsonProperty("streamable")]
-        public bool Streamable { get; set; }
-
-        [JsonProperty("previewable")]
-        public bool Previewable { get; set; }
-
-        [JsonProperty("sampleable")]
-        public bool Sampleable { get; set; }
-
-        [JsonProperty("downloadable")]
-        public bool Downloadable { get; set; }
-
-        [JsonProperty("displayable")]
-        public bool Displayable { get; set; }
-
-        [JsonProperty("purchasable_at")]
-        public int PurchasableAt { get; set; }
-
-        [JsonProperty("streamable_at")]
-        public int StreamableAt { get; set; }
-
-        [JsonProperty("maximum_sampling_rate")]
-        public double MaximumSamplingRate { get; set; }
-
-        [JsonProperty("maximum_bit_depth")]
-        public int MaximumBitDepth { get; set; }
-
-        [JsonProperty("hires")]
-        public bool Hires { get; set; }
-
-    }
-
     public class Image
     {
         [JsonProperty("thumbnail")]
@@ -273,6 +215,16 @@ namespace QopenAPI
 
         [JsonProperty("large")]
         public string Large { get; set; }
+
+    }
+
+    public class AudioInfo
+    {
+        [JsonProperty("replaygain_track_gain")]
+        public string ReplayGainTrackGain { get; set; }
+
+        [JsonProperty("replaygain_track_peak")]
+        public string ReplayGainTrackPeak { get; set; }
 
     }
 
@@ -292,6 +244,16 @@ namespace QopenAPI
 
         [JsonProperty("slug")]
         public string Slug { get; set; }
+
+    }
+
+    public class Composer
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
     }
 
@@ -340,7 +302,7 @@ namespace QopenAPI
         public string StreamURL { get; set; }
 
         [JsonProperty("format_id")]
-        public string FormatID { get; set; }
+        public int FormatID { get; set; }
 
         [JsonProperty("mime_type")]
         public string MimeType { get; set; }

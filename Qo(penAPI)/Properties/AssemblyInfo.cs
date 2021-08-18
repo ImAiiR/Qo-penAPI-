@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Qo(penAPI)")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Open source C# API Library for Qobuz, probably with bad code, but as long as it works, that's fine.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ImAiiR")]
 [assembly: AssemblyProduct("Qo(penAPI)")]

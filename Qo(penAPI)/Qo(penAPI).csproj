@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Album.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="PlaylistResult.cs" />
     <Compile Include="Qo%28penAPI%29.cs" />
