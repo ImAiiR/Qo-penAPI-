@@ -80,6 +80,9 @@ namespace QopenAPI
         [JsonProperty("hires")]
         public bool Hires { get; set; }
 
+        [JsonProperty("tracks")]
+        public Tracks Tracks { get; set; }
+
     }
 }
 
