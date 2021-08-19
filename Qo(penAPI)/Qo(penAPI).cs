@@ -171,6 +171,30 @@ namespace QopenAPI
             }
         }
 
+        public User ResetPassword(string app_id, string email)
+        {
+            string reset_url = baseUrl + "user/resetPassword";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("username", email);
+
+            string _parameterizedURL = CreateParameterizedQuery(reset_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                User user = JsonConvert.DeserializeObject<User>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                return user;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
         public Album AlbumGet(string app_id, string album_id)
         {
             string album_url = baseUrl + "album/get";
