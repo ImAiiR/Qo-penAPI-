@@ -258,7 +258,32 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 Item track = JsonConvert.DeserializeObject<Item>(result);
-                System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                return track;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Item TrackGetWithAuth(string app_id, string track_id, string user_auth_token)
+        {
+            string track_url = baseUrl + "track/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("track_id", track_id);
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(track_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Item track = JsonConvert.DeserializeObject<Item>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
                 return track;
             }
             else
