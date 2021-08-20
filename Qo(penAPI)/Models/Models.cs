@@ -173,10 +173,10 @@ namespace QopenAPI
         [JsonProperty("displayable")]
         public bool Displayable { get; set; }
 
-        [JsonProperty("purchasable_at")]
+        [JsonProperty("purchasable_at", NullValueHandling = NullValueHandling.Ignore)]
         public int PurchasableAt { get; set; }
 
-        [JsonProperty("streamable_at")]
+        [JsonProperty("streamable_at", NullValueHandling = NullValueHandling.Ignore)]
         public int StreamableAt { get; set; }
 
         [JsonProperty("parental_warning")]
@@ -202,6 +202,9 @@ namespace QopenAPI
 
         [JsonProperty("playlist_track_id")]
         public int PlaylistTrackId { get; set; }
+
+        [JsonProperty("work")]
+        public string Work { get; set; }
 
     }
 

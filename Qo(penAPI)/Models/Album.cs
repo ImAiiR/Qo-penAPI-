@@ -128,10 +128,10 @@ namespace QopenAPI
         [JsonProperty("displayable")]
         public bool Displayable { get; set; }
 
-        [JsonProperty("purchasable_at")]
+        [JsonProperty("purchasable_at", NullValueHandling = NullValueHandling.Ignore)]
         public int PurchasableAt { get; set; }
 
-        [JsonProperty("streamable_at")]
+        [JsonProperty("streamable_at", NullValueHandling = NullValueHandling.Ignore)]
         public int StreamableAt { get; set; }
 
         [JsonProperty("maximum_sampling_rate")]
