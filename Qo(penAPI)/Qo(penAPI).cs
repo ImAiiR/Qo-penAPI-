@@ -219,6 +219,31 @@ namespace QopenAPI
             }
         }
 
+        public Album AlbumGetWithAuth(string app_id, string album_id, string user_auth_token)
+        {
+            string album_url = baseUrl + "album/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("album_id", album_id);
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(album_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Album album = JsonConvert.DeserializeObject<Album>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                return album;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
         public Item TrackGet(string app_id, string track_id)
         {
             string track_url = baseUrl + "track/get";

@@ -53,7 +53,7 @@ namespace QopenAPI
     public class AlbumEx : Album
     {
         [JsonProperty("articles")]
-        public List<Article> Articles { get; set; }     
+        public List<Article> ArticlesSearch { get; set; }     
     }
         
     public class Article

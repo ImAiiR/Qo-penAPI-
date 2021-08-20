@@ -210,6 +210,9 @@ namespace QopenAPI
         [JsonProperty("thumbnail")]
         public string Thumbnail { get; set; }
 
+        [JsonProperty("back")]
+        public object Back { get; set; }
+
         [JsonProperty("small")]
         public string Small { get; set; }
 
@@ -249,6 +252,18 @@ namespace QopenAPI
 
     public class Composer
     {
+        [JsonProperty("picture")]
+        public object Picture { get; set; }
+
+        [JsonProperty("albums_count")]
+        public int AlbumsCount { get; set; }
+
+        [JsonProperty("image")]
+        public object Image { get; set; }
+
+        [JsonProperty("slug")]
+        public string Slug { get; set; }
+
         [JsonProperty("id")]
         public int Id { get; set; }
 
