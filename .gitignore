@@ -355,3 +355,4 @@ Qo(penAPI)-Tester/UnitTest1.cs
 QBDLX-Console-Testing/
 Qo(penAPI)/Qo(penAPI).nuspec
 Qo(penAPI)-Tester/Qo(penAPI)-Tester.csproj
+*.bat

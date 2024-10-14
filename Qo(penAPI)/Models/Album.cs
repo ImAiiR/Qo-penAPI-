@@ -3,8 +3,35 @@ using System.Collections.Generic;
 
 namespace QopenAPI
 {
+    public class Albums
+    {
+        [JsonProperty("limit")]
+        public int Limit { get; set; }
+
+        [JsonProperty("offset")]
+        public int Offset { get; set; }
+
+        [JsonProperty("total")]
+        public int Total { get; set; }
+
+        [JsonProperty("items")]
+        public List<Item> Items { get; set; }
+
+    }
+
     public class Album
     {
+        // For errors //
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
+        // End for errors //
+
         [JsonProperty("id")]
         public string Id { get; set; }
 

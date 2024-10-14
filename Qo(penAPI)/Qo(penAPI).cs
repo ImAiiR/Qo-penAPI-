@@ -34,7 +34,7 @@ namespace QopenAPI
                     var htmlCode = QoWebClient.DownloadString("https://play.qobuz.com" + bundleURL);
                     try
                     {
-                        var regexSearch2 = Regex.Match(htmlCode, "\\):\\(n.qobuzapi={app_id:\"(?<appID>.*?)\",app_secret:").Groups;
+                        var regexSearch2 = Regex.Match(htmlCode, "production:{api\\:{appId:\"(?<appID>.*?)\",appSecret:").Groups;
                         var jsonAppID = "{\"app_id\": \"" + regexSearch2[1].Value + "\"}";
                         AppID app = JsonConvert.DeserializeObject<AppID>(jsonAppID);
                         return app;
@@ -84,46 +84,20 @@ namespace QopenAPI
                         B64step1 = B64step1.Remove(B64step1.Length - 44, 44);
                         byte[] step2Data = Convert.FromBase64String(B64step1);
                         app_secret = Encoding.UTF8.GetString(step2Data);
+                        Console.WriteLine("app_secret = " + app_secret);
 
-                        while (true)
+                        try
                         {
-                            try
-                            {
-                                Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-                                string time = unixTimestamp.ToString();
-                                string signatureKey = "userLibrarygetAlbumsList" + time + app_secret;
-                                string signature = null;
-
-                                using (MD5 md5Hash = MD5.Create())
-                                {
-                                    signature = GetMd5Hash(md5Hash, signatureKey);
-                                }
-
-                                string test_url = baseUrl + "userLibrary/getAlbumsList";
-                                Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-                                _paramsValue.Add("app_id", app_id);
-                                _paramsValue.Add("user_auth_token", user_auth_token);
-                                _paramsValue.Add("request_ts", time);
-                                _paramsValue.Add("request_sig", signature);
-
-                                string _parameterizedURL = CreateParameterizedQuery(test_url, _paramsValue);
-
-                                var response = QoHttpClient.GetAsync(_parameterizedURL);
-                                if (response.Result.IsSuccessStatusCode)
-                                {
-                                    app_secret = app_secret;
-                                    break;
-                                }
-                                else
-                                {
-                                    System.Diagnostics.Trace.WriteLine("shit aint work");
-                                    return null;
-                                }
-                            }
-                            catch
-                            {
-                                
-                            }
+                            string testURL = TrackGetFileUrl("197432204", "5", app_id, user_auth_token, app_secret).StreamURL;
+                            Console.WriteLine("app_secret test stream url = " + testURL);
+                            // If GetStream test works, set app_secret.
+                            app_secret = app_secret;
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Trace.WriteLine("app_secret test failed");
+                            System.Diagnostics.Trace.WriteLine(ex);
+                            return null;
                         }
 
                         var jsonAppSecret = "{\"app_secret\": \"" + app_secret + "\"}";
@@ -146,13 +120,23 @@ namespace QopenAPI
             }
         }
 
-        public User Login(string app_id, string email, string password)
+        public User Login(string app_id, string email, string password, string user_auth_token)
         {
             string login_url = baseUrl + "user/login";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
             _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("email", email);
-            _paramsValue.Add("password", password);
+            if (email != null)
+            {
+                _paramsValue.Add("email", email);
+            }
+            if (password != null)
+            {
+                _paramsValue.Add("password", password);
+            }
+            if (user_auth_token != null)
+            {
+                _paramsValue.Add("user_auth_token", user_auth_token);
+            }
 
             string _parameterizedURL = CreateParameterizedQuery(login_url, _paramsValue);
 
@@ -161,7 +145,7 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 User user = JsonConvert.DeserializeObject<User>(result);
-                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return user;
             }
             else
@@ -173,19 +157,23 @@ namespace QopenAPI
 
         public User ResetPassword(string app_id, string email)
         {
+            // CURRENTLY NOT WORKING
             string reset_url = baseUrl + "user/resetPassword";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
             _paramsValue.Add("app_id", app_id);
+            System.Diagnostics.Trace.WriteLine("app_id = " + app_id);
             _paramsValue.Add("username", email);
+            System.Diagnostics.Trace.WriteLine("e-mail = " + email);
 
             string _parameterizedURL = CreateParameterizedQuery(reset_url, _paramsValue);
+            System.Diagnostics.Trace.WriteLine("parameterizedURL = " + _parameterizedURL);
 
             var response = QoHttpClient.GetAsync(_parameterizedURL);
             if (response.Result.IsSuccessStatusCode)
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 User user = JsonConvert.DeserializeObject<User>(result);
-                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return user;
             }
             else
@@ -209,7 +197,7 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 Album album = JsonConvert.DeserializeObject<Album>(result);
-                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return album;
             }
             else
@@ -234,8 +222,63 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 Album album = JsonConvert.DeserializeObject<Album>(result);
-                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view login API response
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return album;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("API response error");
+                return null;
+            }
+        }
+
+        public Artist ArtistGet(string app_id, string album_id)
+        {
+            string artist_url = baseUrl + "artist/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("artist_id", album_id);
+            _paramsValue.Add("extra", "albums%2Calbums_with_last_release");
+            _paramsValue.Add("limit", "9999");
+            _paramsValue.Add("sort", "release_desc");
+
+            string _parameterizedURL = CreateParameterizedQuery(artist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Artist artist = JsonConvert.DeserializeObject<Artist>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return artist;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Artist ArtistGetWithAuth(string app_id, string album_id, string user_auth_token)
+        {
+            string artist_url = baseUrl + "artist/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("artist_id", album_id);
+            _paramsValue.Add("extra", "albums%2Calbums_with_last_release");
+            _paramsValue.Add("limit", "9999");
+            _paramsValue.Add("sort", "release_desc");
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(artist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Artist artist = JsonConvert.DeserializeObject<Artist>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return artist;
             }
             else
             {
@@ -324,6 +367,171 @@ namespace QopenAPI
                 Stream stream = JsonConvert.DeserializeObject<Stream>(result);
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view stream API response
                 return stream;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Favorites FavoriteGetUserFavorites(string app_id, string user_id, string type, int limit, int offset)
+        {
+            string favorites_url = baseUrl + "album/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("user_id", user_id);
+            _paramsValue.Add("type", type);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+
+            string _parameterizedURL = CreateParameterizedQuery(favorites_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Favorites favorites = JsonConvert.DeserializeObject<Favorites>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return favorites;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Favorites FavoriteGetUserFavoritesWithAuth(string app_id, string user_id, string type, int limit, int offset, string user_auth_token)
+        {
+            string favorites_url = baseUrl + "favorite/getUserFavorites";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("user_id", user_id);
+            _paramsValue.Add("type", type);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(favorites_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Favorites favorites = JsonConvert.DeserializeObject<Favorites>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return favorites;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Label LabelGet(string app_id, string label_id, string extra, int limit, int offset)
+        {
+            string label_url = baseUrl + "label/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("label_id", label_id);
+            _paramsValue.Add("extra", "albums");
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+
+            string _parameterizedURL = CreateParameterizedQuery(label_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Label label = JsonConvert.DeserializeObject<Label>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return label;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Label LabelGetWithAuth(string app_id, string label_id, string extra, int limit, int offset, string user_auth_token)
+        {
+            string label_url = baseUrl + "label/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("label_id", label_id);
+            _paramsValue.Add("extra", extra);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(label_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Label label = JsonConvert.DeserializeObject<Label>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return label;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Playlist PlaylistGet(string app_id, string playlist_id, string extra, int limit, int offset)
+        {
+            string playlist_url = baseUrl + "playlist/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("playlist_id", playlist_id);
+            _paramsValue.Add("extra", extra);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+
+            string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Playlist playlist = JsonConvert.DeserializeObject<Playlist>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return playlist;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public Playlist PlaylistGetWithAuth(string app_id, string playlist_id, string extra, int limit, int offset, string user_auth_token)
+        {
+            string playlist_url = baseUrl + "playlist/get";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("playlist_id", playlist_id);
+            _paramsValue.Add("extra", extra);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                Playlist playlist = JsonConvert.DeserializeObject<Playlist>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return playlist;
             }
             else
             {

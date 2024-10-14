@@ -17,6 +17,17 @@ namespace QopenAPI
     
     public class Playlist
     {
+        // For errors //
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
+        // End for errors //
+
         [JsonProperty("tracks_count")]
         public int TracksCount { get; set; }
 
@@ -88,6 +99,22 @@ namespace QopenAPI
 
     }
 
+    public class Favorites
+    {
+        [JsonProperty("albums")]
+        public Albums Albums { get; set; }
+
+        [JsonProperty("tracks")]
+        public Tracks Tracks { get; set; }
+
+        [JsonProperty("artists")]
+        public Artists Artists { get; set; }
+
+        [JsonProperty("user")]
+        public User User { get; set; }
+
+    }
+
     public class Owner
     {
         [JsonProperty("id")]
@@ -117,7 +144,10 @@ namespace QopenAPI
     public class Item
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public object Id { get; set; }
+
+        [JsonProperty("image")]
+        public Image Image { get; set; }
 
         [JsonProperty("performers")]
         public string Performers { get; set; }
@@ -128,6 +158,21 @@ namespace QopenAPI
         [JsonProperty("title")]
         public string Title { get; set; }
 
+        [JsonProperty("artist")]
+        public Artist Artist { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("slug")]
+        public string Slug { get; set; }
+
+        [JsonProperty("picture")]
+        public object Picture { get; set; }
+
+        [JsonProperty("favorited_at")]
+        public int FavoritedAt { get; set; }
+
         [JsonProperty("album")]
         public Album Album { get; set; }
 
@@ -137,23 +182,53 @@ namespace QopenAPI
         [JsonProperty("composer")]
         public Composer Composer { get; set; }
 
+        [JsonProperty("genre")]
+        public Genre Genre { get; set; }
+
         [JsonProperty("copyright")]
         public string Copyright { get; set; }
+
+        [JsonProperty("label")]
+        public Label Label { get; set; }
 
         [JsonProperty("isrc")]
         public string ISRC { get; set; }
 
+        [JsonProperty("upc")]
+        public string UPC { get; set; }
+
         [JsonProperty("audio_info")]
         public AudioInfo AudioInfo { get; set; }
+
+        [JsonProperty("albums_count")]
+        public int AlbumsCount { get; set; }
 
         [JsonProperty("media_number")]
         public int MediaNumber { get; set; }
 
+        [JsonProperty("media_count")]
+        public int MediaCount { get; set; }
+
         [JsonProperty("track_number")]
         public int TrackNumber { get; set; }
 
+        [JsonProperty("tracks_count")]
+        public int TracksCount { get; set; }
+
         [JsonProperty("version")]
         public object Version { get; set; }
+
+        [JsonProperty("released_at")]
+        public int ReleasedAt { get; set; }
+
+        [JsonProperty("release_date_original")]
+        public string ReleaseDateOriginal { get; set; }
+
+        [JsonProperty("release_date_download")]
+        public string ReleaseDateDownload { get; set; }
+
+        [JsonProperty("release_date_stream")]
+        public string ReleaseDateStream { get; set; }
 
         [JsonProperty("purchasable")]
         public bool Purchasable { get; set; }
@@ -194,6 +269,9 @@ namespace QopenAPI
         [JsonProperty("hires")]
         public bool Hires { get; set; }
 
+        [JsonProperty("hires_streamable")]
+        public bool HiresStreamable { get; set; }
+
         [JsonProperty("position")]
         public int Position { get; set; }
 
@@ -201,10 +279,19 @@ namespace QopenAPI
         public int CreatedAt { get; set; }
 
         [JsonProperty("playlist_track_id")]
-        public int PlaylistTrackId { get; set; }
+        public object PlaylistTrackId { get; set; }
+
+        [JsonProperty("qobuz_id")]
+        public int QobuzId { get; set; }
+
+        [JsonProperty("url")]
+        public string Url { get; set; }
 
         [JsonProperty("work")]
         public string Work { get; set; }
+
+        [JsonProperty("articles")]
+        public List<Article> Articles { get; set; }
 
     }
 
@@ -236,6 +323,17 @@ namespace QopenAPI
 
     public class Label
     {
+        // For errors //
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
+        // End for errors //
+
         [JsonProperty("id")]
         public int Id { get; set; }
 
@@ -250,6 +348,15 @@ namespace QopenAPI
 
         [JsonProperty("slug")]
         public string Slug { get; set; }
+
+        [JsonProperty("image")]
+        public object Image { get; set; }
+
+        [JsonProperty("description")]
+        public object Description { get; set; }
+
+        [JsonProperty("albums")]
+        public Albums Albums { get; set; }
 
     }
 
@@ -277,9 +384,19 @@ namespace QopenAPI
 
     public class Artist
     {
+        // For errors //
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
+        // End for errors //
+
         [JsonProperty("picture")]
         public object Picture { get; set; }
-
 
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -296,6 +413,33 @@ namespace QopenAPI
         [JsonProperty("slug")]
         public string Slug { get; set; }
 
+        [JsonProperty("biography")]
+        public Biography Biography { get; set; }
+
+        [JsonProperty("information")]
+        public object Information { get; set; }
+
+        [JsonProperty("albums")]
+        public Albums Albums { get; set; }
+
+        [JsonProperty("similar_artist_ids")]
+        public List<int> SimilarArtistIds { get; set; }
+
+    }
+
+    public class Biography
+    {
+        [JsonProperty("summary")]
+        public string Summary { get; set; }
+
+        [JsonProperty("content")]
+        public string Content { get; set; }
+
+        [JsonProperty("source")]
+        public string Source { get; set; }
+
+        [JsonProperty("language")]
+        public string Language { get; set; }
     }
 
     public class Performer
@@ -310,6 +454,17 @@ namespace QopenAPI
 
     public class Stream
     {
+        // For errors //
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
+        // End for errors //
+
         [JsonProperty("track_id")]
         public int TrackID { get; set; }
 

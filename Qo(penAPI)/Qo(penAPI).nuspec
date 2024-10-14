@@ -2,15 +2,15 @@
 <package >
   <metadata>
     <id>QopenAPI</id>
-    <version>0.0.1.0</version>
+    <version>0.0.2.7</version>
     <title>Qo(penAPI)</title>
     <authors>AiiR</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/ImAiiR/Qo-penAPI-</projectUrl>
     <description>Open source C# API Library for Qobuz, probably with bad code, but as long as it works, that's fine.</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright © 2021</copyright>
+    <releaseNotes>Added token to login (actually this time)</releaseNotes>
+    <copyright>Copyright © 2024</copyright>
     <tags>Qobuz API C#</tags>
   </metadata>
 </package>

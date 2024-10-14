@@ -13,6 +13,12 @@ namespace QopenAPI
 
         [JsonProperty("user")]
         public UserInfo UserInfo { get; set; }
+
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("login")]
+        public string Login { get; set; }
     }
 
     public class UserInfo
@@ -78,13 +84,13 @@ namespace QopenAPI
     public class Credential
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public object Id { get; set; }
 
         [JsonProperty("description")]
         public string Description { get; set; }
 
         [JsonProperty("label")]
-        public string Label { get; set; }
+        public object label { get; set; }
 
         [JsonProperty("parameters")]
         public Parameters Parameters { get; set; }
