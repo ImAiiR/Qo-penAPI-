@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace QopenAPI
@@ -72,7 +73,7 @@ namespace QopenAPI
         public LastUpdate LastUpdate { get; set; }
 
         [JsonProperty("player_settings")]
-        public PlayerSettings PlayerSettings { get; set; }
+        public JToken PlayerSettings { get; set; }
 
         [JsonProperty("externals")]
         public Externals Externals { get; set; }

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.IO;
 using System.Security.Cryptography;
+using System.Net.Http.Headers;
 
 namespace QopenAPI
 {
@@ -124,7 +125,6 @@ namespace QopenAPI
         {
             string login_url = baseUrl + "user/login";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
             if (email != null)
             {
                 _paramsValue.Add("email", email);
@@ -140,10 +140,12 @@ namespace QopenAPI
 
             string _parameterizedURL = CreateParameterizedQuery(login_url, _paramsValue);
 
+            QoHttpClient.DefaultRequestHeaders.Add("X-App-Id", app_id);
             var response = QoHttpClient.GetAsync(_parameterizedURL);
             if (response.Result.IsSuccessStatusCode)
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
+                System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
                 User user = JsonConvert.DeserializeObject<User>(result);
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return user;
@@ -151,7 +153,7 @@ namespace QopenAPI
             else
             {
                 System.Diagnostics.Trace.WriteLine("shit aint work");
-                //System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
+                System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
                 return null;
             }
         }
