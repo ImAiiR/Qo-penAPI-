@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>QopenAPI</id>
-    <version>0.0.2.9</version>
+    <version>0.0.3.0</version>
     <title>Qo(penAPI)</title>
     <authors>AiiR</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/ImAiiR/Qo-penAPI-</projectUrl>
     <description>Open source C# API Library for Qobuz, probably with bad code, but as long as it works, that's fine.</description>
-    <releaseNotes>Changed PlayerSettings to JToken</releaseNotes>
+    <releaseNotes>Fixed issue with multiple app IDs during login (forgot to clear added headers, whoops)</releaseNotes>
     <copyright>Copyright © 2024</copyright>
     <tags>Qobuz API C#</tags>
   </metadata>

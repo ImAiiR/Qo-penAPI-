@@ -140,12 +140,14 @@ namespace QopenAPI
 
             string _parameterizedURL = CreateParameterizedQuery(login_url, _paramsValue);
 
+            QoHttpClient.DefaultRequestHeaders.Remove("X-App-Id");
             QoHttpClient.DefaultRequestHeaders.Add("X-App-Id", app_id);
             var response = QoHttpClient.GetAsync(_parameterizedURL);
             if (response.Result.IsSuccessStatusCode)
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
+                QoHttpClient.DefaultRequestHeaders.Remove("X-App-Id");
                 User user = JsonConvert.DeserializeObject<User>(result);
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return user;
@@ -154,6 +156,7 @@ namespace QopenAPI
             {
                 System.Diagnostics.Trace.WriteLine("shit aint work");
                 System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
+                QoHttpClient.DefaultRequestHeaders.Remove("X-App-Id");
                 return null;
             }
         }
