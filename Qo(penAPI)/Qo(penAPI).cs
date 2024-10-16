@@ -131,7 +131,7 @@ namespace QopenAPI
             }
             if (password != null)
             {
-                _paramsValue.Add("password", password);
+                _paramsValue.Add("password", WebUtility.UrlEncode(password));
             }
             if (user_auth_token != null)
             {
@@ -151,6 +151,7 @@ namespace QopenAPI
             else
             {
                 System.Diagnostics.Trace.WriteLine("shit aint work");
+                //System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
                 return null;
             }
         }
