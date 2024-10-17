@@ -147,7 +147,6 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
-                QoHttpClient.DefaultRequestHeaders.Remove("X-App-Id");
                 User user = JsonConvert.DeserializeObject<User>(result);
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return user;
@@ -156,7 +155,6 @@ namespace QopenAPI
             {
                 System.Diagnostics.Trace.WriteLine("shit aint work");
                 System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
-                QoHttpClient.DefaultRequestHeaders.Remove("X-App-Id");
                 return null;
             }
         }
