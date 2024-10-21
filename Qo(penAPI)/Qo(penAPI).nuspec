@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>QopenAPI</id>
-    <version>0.0.3.1</version>
+    <version>0.0.3.2</version>
     <title>Qo(penAPI)</title>
     <authors>AiiR</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/ImAiiR/Qo-penAPI-</projectUrl>
     <description>Open source C# API Library for Qobuz, probably with bad code, but as long as it works, that's fine.</description>
-    <releaseNotes>Removed extra lines, and uploading correct version this time (right?)</releaseNotes>
+    <releaseNotes>Added search for albums and tracks</releaseNotes>
     <copyright>Copyright © 2024</copyright>
     <tags>Qobuz API C#</tags>
   </metadata>

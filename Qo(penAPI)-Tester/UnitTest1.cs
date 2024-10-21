@@ -116,6 +116,62 @@ namespace Qo_penAPI__Tester
         }
         #endregion
 
+        #region Test Getting Album Search Results (w/ Auth)
+        [TestMethod]
+        public void SearchAlbumWithAuth()
+        {
+            Service service = new Service();
+            AppID appid;
+            User user;
+            SearchAlbumResult search;
+            try
+            {
+                appid = service.GetAppID();
+                user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
+                search = service.SearchAlbumsWithAuth(appid.App_ID, "twenty one pilots", 50, 0, user.UserAuthToken);
+            }
+            catch
+            {
+                throw;
+            }
+            Assert.IsTrue(search != null && !string.IsNullOrEmpty(search.Query));
+            foreach (var item in search.Albums.Items)
+            {
+                Console.WriteLine("Release Name: {0}", item.Title);
+                Console.WriteLine("Release ID: {0}", item.Id);
+            }
+
+        }
+        #endregion
+
+        #region Test Getting Track Search Results (w/ Auth)
+        [TestMethod]
+        public void SearchTrackWithAuth()
+        {
+            Service service = new Service();
+            AppID appid;
+            User user;
+            SearchTrackResult search;
+            try
+            {
+                appid = service.GetAppID();
+                user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
+                search = service.SearchTracksWithAuth(appid.App_ID, "twenty one pilots", 50, 0, user.UserAuthToken);
+            }
+            catch
+            {
+                throw;
+            }
+            Assert.IsTrue(search != null && !string.IsNullOrEmpty(search.Query));
+            foreach (var item in search.Tracks.Items)
+            {
+                Console.WriteLine("Track Name: {0}", item.Title);
+                Console.WriteLine("Track ID: {0}", item.Id);
+            }
+
+        }
+        #endregion
+
         #region Test Getting Artist Info (w/ Auth)
         [TestMethod]
         public void ArtistGetWithAuth()
@@ -369,7 +425,7 @@ namespace Qo_penAPI__Tester
             foreach (var item in favorites.Albums.Items)
             {
                 Console.WriteLine("Track Name: {0}", item.Title);
-                Console.WriteLine("PRIME ELEMENT: {0}", item.Id);
+                Console.WriteLine("Track ID: {0}", item.Id);
             }
         }
         #endregion
@@ -397,7 +453,7 @@ namespace Qo_penAPI__Tester
             foreach (var item in favorites.Tracks.Items)
             {
                 Console.WriteLine("Track Name: {0}", item.Title);
-                Console.WriteLine("PRIME ELEMENT: {0}", item.Id);
+                Console.WriteLine("Track ID: {0}", item.Id);
             }
         }
         #endregion
@@ -425,7 +481,7 @@ namespace Qo_penAPI__Tester
             foreach (var item in favorites.Artists.Items)
             {
                 Console.WriteLine("Track Name: {0}", item.Name);
-                Console.WriteLine("PRIME ELEMENT: {0}", item.Id);
+                Console.WriteLine("Track ID: {0}", item.Id);
             }
         }
         #endregion
@@ -452,8 +508,8 @@ namespace Qo_penAPI__Tester
 
             foreach (var item in label.Albums.Items)
             {
-                Console.WriteLine("Track Name: {0}", item.Title);
-                Console.WriteLine("PRIME ELEMENT: {0}", item.Id);
+                Console.WriteLine("Release Name: {0}", item.Title);
+                Console.WriteLine("Release ID: {0}", item.Id);
             }
         }
         #endregion
@@ -481,7 +537,7 @@ namespace Qo_penAPI__Tester
             foreach (var item in playlist.Tracks.Items)
             {
                 Console.WriteLine("Track Name: {0}", item.Title);
-                Console.WriteLine("PRIME ELEMENT: {0}", item.Id);
+                Console.WriteLine("Track ID: {0}", item.Id);
             }
         }
         #endregion

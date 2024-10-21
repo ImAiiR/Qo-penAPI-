@@ -543,6 +543,60 @@ namespace QopenAPI
                 return null;
             }
         }
+        
+        public SearchAlbumResult SearchAlbumsWithAuth(string app_id, string searchTerm, int limit, int offset, string user_auth_token)
+        {
+            string playlist_url = baseUrl + "album/search";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("query", searchTerm);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                SearchAlbumResult search = JsonConvert.DeserializeObject<SearchAlbumResult>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return search;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public SearchTrackResult SearchTracksWithAuth(string app_id, string searchTerm, int limit, int offset, string user_auth_token)
+        {
+            string playlist_url = baseUrl + "track/search";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
+            _paramsValue.Add("app_id", app_id);
+            _paramsValue.Add("query", searchTerm);
+            _paramsValue.Add("limit", limit.ToString());
+            _paramsValue.Add("offset", offset.ToString());
+            _paramsValue.Add("user_auth_token", user_auth_token);
+
+            string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                SearchTrackResult search = JsonConvert.DeserializeObject<SearchTrackResult>(result);
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return search;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
 
         private string CreateParameterizedQuery(string url, Dictionary<string, string> parameters)
         {
