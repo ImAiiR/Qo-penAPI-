@@ -125,6 +125,9 @@ namespace QopenAPI
         [JsonProperty("artist")]
         public Artist Artist { get; set; }
 
+        [JsonProperty("artists")]
+        public List<ArtistsList> Artists { get; set; }
+
         [JsonProperty("version")]
         public string Version { get; set; }
 

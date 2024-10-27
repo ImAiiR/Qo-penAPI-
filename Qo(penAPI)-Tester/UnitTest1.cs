@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QopenAPI;
 
@@ -211,7 +212,7 @@ namespace Qo_penAPI__Tester
             try
             {
                 appid = service.GetAppID();
-                album = service.AlbumGet(appid.App_ID, "0886443927087");
+                album = service.AlbumGet(appid.App_ID, "epi0dnl1yec1a");
             }
             catch
             {
@@ -229,7 +230,6 @@ namespace Qo_penAPI__Tester
             Console.WriteLine("Cover Art = " + album.Image.Large);
             Console.WriteLine("Disc Total = " + album.MediaCount);
             Console.WriteLine("Label = " + album.Label.Name);
-            Console.WriteLine("Artist = " + album.Artist.Name);
             Console.WriteLine("Qobuz ID = " + album.QobuzId);
             Console.WriteLine("Popularity = " + album.Popularity);
             Console.WriteLine("Purchasable = " + album.Purchasable);
@@ -242,6 +242,18 @@ namespace Qo_penAPI__Tester
             Console.WriteLine("Displayable = " + album.Displayable);
             Console.WriteLine("Maximum Sampling Rate = " + album.MaximumSamplingRate);
             Console.WriteLine("Maximum Bit Depth = " + album.MaximumBitDepth);
+
+            if (album.Artists.Count > 1)
+            {
+                var mainArtists = album.Artists.Where(a => a.Roles.Contains("main-artist")).ToList();
+                string allButLast = string.Join(", ", mainArtists.Take(album.Artists.Count - 1).Select(a => a.Name));
+                string lastArtist = mainArtists.Last().Name;
+                Console.WriteLine("Artist = " + allButLast + " & " + lastArtist);
+            }
+            else
+            {
+                Console.WriteLine("Artist = " + album.Artist.Name);
+            }
 
             foreach (var item in album.Tracks.Items)
             {
@@ -264,7 +276,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                album = service.AlbumGetWithAuth(appid.App_ID, "0794881993420", user.UserAuthToken);
+                album = service.AlbumGetWithAuth(appid.App_ID, "epi0dnl1yec1a", user.UserAuthToken);
             }
             catch
             {
@@ -282,7 +294,6 @@ namespace Qo_penAPI__Tester
             Console.WriteLine("Cover Art = " + album.Image.Large);
             Console.WriteLine("Disc Total = " + album.MediaCount);
             Console.WriteLine("Label = " + album.Label.Name);
-            Console.WriteLine("Artist = " + album.Artist.Name);
             Console.WriteLine("Qobuz ID = " + album.QobuzId);
             Console.WriteLine("Popularity = " + album.Popularity);
             Console.WriteLine("Purchasable = " + album.Purchasable);
@@ -295,6 +306,18 @@ namespace Qo_penAPI__Tester
             Console.WriteLine("Displayable = " + album.Displayable);
             Console.WriteLine("Maximum Sampling Rate = " + album.MaximumSamplingRate);
             Console.WriteLine("Maximum Bit Depth = " + album.MaximumBitDepth);
+
+            if (album.Artists.Count > 1)
+            {
+                var mainArtists = album.Artists.Where(a => a.Roles.Contains("main-artist")).ToList();
+                string allButLast = string.Join(", ", mainArtists.Take(album.Artists.Count - 1).Select(a => a.Name));
+                string lastArtist = mainArtists.Last().Name;
+                Console.WriteLine("Artist = " + allButLast + " & " + lastArtist);
+            }
+            else
+            {
+                Console.WriteLine("Artist = " + album.Artist.Name);
+            }
 
             foreach (var item in album.Tracks.Items)
             {

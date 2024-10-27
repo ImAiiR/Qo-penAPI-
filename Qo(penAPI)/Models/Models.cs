@@ -427,6 +427,18 @@ namespace QopenAPI
 
     }
 
+    public class ArtistsList
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("roles")]
+        public List<string> Roles { get; set; }
+    }
+
     public class Biography
     {
         [JsonProperty("summary")]
