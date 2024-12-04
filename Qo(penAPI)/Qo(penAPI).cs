@@ -146,7 +146,6 @@ namespace QopenAPI
             if (response.Result.IsSuccessStatusCode)
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
-                System.Diagnostics.Trace.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
                 User user = JsonConvert.DeserializeObject<User>(result);
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return user;

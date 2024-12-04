@@ -185,7 +185,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                artist = service.ArtistGetWithAuth(appid.App_ID, "3131928", user.UserAuthToken);
+                artist = service.ArtistGetWithAuth(appid.App_ID, "45874", user.UserAuthToken);
             }
             catch
             {
@@ -579,10 +579,11 @@ namespace Qo_penAPI__Tester
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
                 appsecret = service.GetAppSecret(appid.App_ID, user.UserAuthToken);
-                stream = service.TrackGetFileUrl("125486173", "27", appid.App_ID, user.UserAuthToken, appsecret.App_Secret);
+                stream = service.TrackGetFileUrl("280639840", "27", appid.App_ID, user.UserAuthToken, appsecret.App_Secret);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Trace.WriteLine("Error:\r\n" + ex);
                 throw;
             }
             Assert.IsTrue(stream != null && !string.IsNullOrEmpty(stream.StreamURL));
