@@ -214,7 +214,7 @@ namespace QopenAPI
             }
         }
 
-        public Album AlbumGet(string app_id, string album_id, int limit = 1200, int offset = 0)
+        public Album AlbumGet(string app_id, string album_id, int limit = 500, int offset = 0)
         {
             string album_url = baseUrl + "album/get";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>
@@ -242,7 +242,7 @@ namespace QopenAPI
             }
         }
 
-        public Album AlbumGetWithAuth(string app_id, string album_id, string user_auth_token, int limit = 1200, int offset = 0)
+        public Album AlbumGetWithAuth(string app_id, string album_id, string user_auth_token, int limit = 500, int offset = 0)
         {
             string album_url = baseUrl + "album/get";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>
