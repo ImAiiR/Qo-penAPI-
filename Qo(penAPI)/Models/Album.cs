@@ -93,7 +93,7 @@ namespace QopenAPI
         public int Duration { get; set; }
 
         [JsonProperty("released_at")]
-        public long ReleasedAt { get; set; }
+        public long? ReleasedAt { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }

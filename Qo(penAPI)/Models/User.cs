@@ -91,7 +91,7 @@ namespace QopenAPI
         public string Description { get; set; }
 
         [JsonProperty("label")]
-        public object label { get; set; }
+        public object Label { get; set; }
 
         [JsonProperty("parameters")]
         public Parameters Parameters { get; set; }
@@ -172,7 +172,7 @@ namespace QopenAPI
     public class ColorScheme
     {
         [JsonProperty("logo")]
-        public string logo { get; set; }
+        public string Logo { get; set; }
     }
 
     public class Externals
