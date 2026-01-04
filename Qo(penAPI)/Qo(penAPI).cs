@@ -1,41 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using QopenAPI;
-using System.Text.RegularExpressions;
 using System.Net;
-using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
-using System.Net.Http.Headers;
+using System.Text;
+using System.Text.RegularExpressions;
+
+using Newtonsoft.Json;
 
 namespace QopenAPI
 {
     public class Service
     {
+#pragma warning disable IDE1006 // Naming Styles
         public string app_id { get; set; }
         public string app_secret { get; set; }
-        private HttpClient QoHttpClient = new HttpClient();
-        private WebClient QoWebClient = new WebClient();
+#pragma warning restore IDE1006 // Naming Styles
 
-        string baseUrl = "https://www.qobuz.com/api.json/0.2/";
+        private readonly HttpClient QoHttpClient = new HttpClient();
+        private readonly WebClient QoWebClient = new WebClient();
+
+        const string baseUrl = "https://www.qobuz.com/api.json/0.2/";
+        const string basePlayUrl = "https://play.qobuz.com";
+        const string loginUrl = "https://play.qobuz.com/login";
+
+        //private static readonly JsonSerializerSettings JsonSettings =
+        //    new JsonSerializerSettings
+        //    {
+        //        NullValueHandling = NullValueHandling.Ignore
+        //    };
+
+        private static readonly Regex BundleJsRegex = new Regex(
+            "<script src=\"(?<bundleJS>\\/resources\\/\\d+\\.\\d+\\.\\d+-[a-z]\\d{3}\\/bundle\\.js)\"><\\/script>",
+            RegexOptions.Compiled
+        );
+
+        private static readonly Regex AppIdRegex = new Regex(
+            "production:\\{api:\\{appId:\"(?<appID>.*?)\",appSecret:",
+            RegexOptions.Compiled
+        );
+
+        // Regex patterns for finding needed values (for Berlin timezone)
+        private static readonly Regex BerlinInfoExtrasRegex = new Regex(
+            "name:\"(?<timezone>[A-Za-z\\/]+\\/Berlin)\",info:\"(?<info>[\\w=]+)\",extras:\"(?<extras>[\\w=]+)\"",
+            RegexOptions.Compiled
+        );
+        private static readonly Regex BerlinSeedRegex = new Regex(
+            "[a-z]\\.initialSeed\\(\"(?<seed>[\\w=]+)\",window\\.utimezone\\.(?<timezone>berlin)\\)",
+            RegexOptions.Compiled
+        );
 
         public AppID GetAppID()
         {
-            using (QoWebClient)
+            using (var QoWebClient = new WebClient())
             {
-                var htmlCodeFind = QoWebClient.DownloadString("https://play.qobuz.com/login");
+                var htmlCodeFind = QoWebClient.DownloadString(loginUrl);
                 try
                 {
-                    var regexSearch = Regex.Match(htmlCodeFind, "<script src=\"(?<bundleJS>\\/resources\\/\\d+\\.\\d+\\.\\d+-[a-z]\\d{3}\\/bundle\\.js)\"><\\/script>").Groups;
+                    // Use the precompiled regex for bundle.js
+                    var regexSearch = BundleJsRegex.Match(htmlCodeFind).Groups;
                     string bundleURL = regexSearch[1].Value;
-                    var htmlCode = QoWebClient.DownloadString("https://play.qobuz.com" + bundleURL);
+                    var htmlCode = QoWebClient.DownloadString(basePlayUrl + bundleURL);
+
                     try
                     {
-                        var regexSearch2 = Regex.Match(htmlCode, "production:{api\\:{appId:\"(?<appID>.*?)\",appSecret:").Groups;
+                        // Use the precompiled regex for appId
+                        var regexSearch2 = AppIdRegex.Match(htmlCode).Groups;
                         var jsonAppID = "{\"app_id\": \"" + regexSearch2[1].Value + "\"}";
                         AppID app = JsonConvert.DeserializeObject<AppID>(jsonAppID);
                         return app;
@@ -59,24 +89,20 @@ namespace QopenAPI
                 var htmlCodeFind = QoWebClient.DownloadString("https://play.qobuz.com/login");
                 try
                 {
-                    var regexSearch = Regex.Match(htmlCodeFind, "<script src=\"(?<bundleJS>\\/resources\\/\\d+\\.\\d+\\.\\d+-[a-z]\\d{3}\\/bundle\\.js)\"><\\/script>").Groups;
-                    string bundleURL = regexSearch[1].Value;
+                    var match = BundleJsRegex.Match(htmlCodeFind);
+                    string bundleURL = match.Groups["bundleJS"].Value;
                     var htmlCode = QoWebClient.DownloadString("https://play.qobuz.com" + bundleURL);
                     try
                     {
-                        // Regex for finding needed values (for Berlin timezone)
-                        var pattern1 = "name:\"(?<timezone>[A-Za-z\\/]+\\/Berlin)\",info:\"(?<info>[\\w=]+)\",extras:\"(?<extras>[\\w=]+)\"";
-                        var pattern2 = "[a-z]\\.initialSeed\\(\"(?<seed>[\\w=]+)\",window\\.utimezone\\.(?<timezone>berlin)\\)";
-
                         // Find "info" & "extras" (for Berlin timezone)
-                        var bundleLog1 = Regex.Match(htmlCode, pattern1);
+                        var bundleLog1 = BerlinInfoExtrasRegex.Match(htmlCode);
                         var bundleInfo = bundleLog1.Groups[2].Captures[0].ToString();
                         Console.WriteLine("info = " + bundleInfo);
                         var bundleExtras = bundleLog1.Groups[3].Captures[0].ToString();
                         Console.WriteLine("extras = " + bundleExtras);
 
                         // Find "seed" (for Berlin timezone)
-                        var bundleLog2 = Regex.Match(htmlCode, pattern2);
+                        var bundleLog2 = BerlinSeedRegex.Match(htmlCode);
                         var bundleSeed = bundleLog2.Groups[1].Captures[0].ToString();
                         Console.WriteLine("seed = " + bundleSeed);
 
@@ -162,8 +188,10 @@ namespace QopenAPI
         {
             // CURRENTLY NOT WORKING
             string reset_url = baseUrl + "user/resetPassword";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id }
+            };
             System.Diagnostics.Trace.WriteLine("app_id = " + app_id);
             _paramsValue.Add("username", email);
             System.Diagnostics.Trace.WriteLine("e-mail = " + email);
@@ -186,12 +214,16 @@ namespace QopenAPI
             }
         }
 
-        public Album AlbumGet(string app_id, string album_id)
+        public Album AlbumGet(string app_id, string album_id, int limit = 500, int offset = 0)
         {
             string album_url = baseUrl + "album/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("album_id", album_id);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "album_id", album_id },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(album_url, _paramsValue);
 
@@ -210,13 +242,17 @@ namespace QopenAPI
             }
         }
 
-        public Album AlbumGetWithAuth(string app_id, string album_id, string user_auth_token)
+        public Album AlbumGetWithAuth(string app_id, string album_id, string user_auth_token, int limit = 500, int offset = 0)
         {
             string album_url = baseUrl + "album/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("album_id", album_id);
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "album_id", album_id },
+                { "user_auth_token", user_auth_token },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(album_url, _paramsValue);
 
@@ -235,15 +271,18 @@ namespace QopenAPI
             }
         }
 
-        public Artist ArtistGet(string app_id, string album_id)
+        public Artist ArtistGet(string app_id, string album_id, int limit = 500, int offset = 0)
         {
             string artist_url = baseUrl + "artist/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("artist_id", album_id);
-            _paramsValue.Add("extra", "albums%2Calbums_with_last_release");
-            _paramsValue.Add("limit", "9999");
-            _paramsValue.Add("sort", "release_desc");
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "artist_id", album_id },
+                { "extra", "albums%2Calbums_with_last_release" },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "sort", "release_desc" }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(artist_url, _paramsValue);
 
@@ -262,16 +301,19 @@ namespace QopenAPI
             }
         }
 
-        public Artist ArtistGetWithAuth(string app_id, string album_id, string user_auth_token)
+        public Artist ArtistGetWithAuth(string app_id, string album_id, string user_auth_token, int limit = 500, int offset = 0)
         {
             string artist_url = baseUrl + "artist/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("artist_id", album_id);
-            _paramsValue.Add("extra", "albums%2Calbums_with_last_release");
-            _paramsValue.Add("limit", "9999");
-            _paramsValue.Add("sort", "release_desc");
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "artist_id", album_id },
+                { "extra", "albums%2Calbums_with_last_release" },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "sort", "release_desc" },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(artist_url, _paramsValue);
 
@@ -280,6 +322,7 @@ namespace QopenAPI
             {
                 string result = response.Result.Content.ReadAsStringAsync().Result;
                 Artist artist = JsonConvert.DeserializeObject<Artist>(result);
+
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return artist;
             }
@@ -293,9 +336,11 @@ namespace QopenAPI
         public Item TrackGet(string app_id, string track_id)
         {
             string track_url = baseUrl + "track/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("track_id", track_id);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "track_id", track_id }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(track_url, _paramsValue);
 
@@ -317,10 +362,12 @@ namespace QopenAPI
         public Item TrackGetWithAuth(string app_id, string track_id, string user_auth_token)
         {
             string track_url = baseUrl + "track/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("track_id", track_id);
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "track_id", track_id },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(track_url, _paramsValue);
 
@@ -352,14 +399,16 @@ namespace QopenAPI
             }
 
             string stream_url = baseUrl + "track/getFileUrl";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("request_ts", time);
-            _paramsValue.Add("request_sig", signature);
-            _paramsValue.Add("track_id", track_id);
-            _paramsValue.Add("format_id", format_id);
-            _paramsValue.Add("intent", "stream");
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "request_ts", time },
+                { "request_sig", signature },
+                { "track_id", track_id },
+                { "format_id", format_id },
+                { "intent", "stream" },
+                { "app_id", app_id },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(stream_url, _paramsValue);
 
@@ -378,15 +427,17 @@ namespace QopenAPI
             }
         }
 
-        public Favorites FavoriteGetUserFavorites(string app_id, string user_id, string type, int limit, int offset)
+        public Favorites FavoriteGetUserFavorites(string app_id, string user_id, string type, int limit = 500, int offset = 0)
         {
             string favorites_url = baseUrl + "album/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("user_id", user_id);
-            _paramsValue.Add("type", type);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "user_id", user_id },
+                { "type", type },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(favorites_url, _paramsValue);
 
@@ -405,16 +456,18 @@ namespace QopenAPI
             }
         }
 
-        public Favorites FavoriteGetUserFavoritesWithAuth(string app_id, string user_id, string type, int limit, int offset, string user_auth_token)
+        public Favorites FavoriteGetUserFavoritesWithAuth(string app_id, string user_id, string type, string user_auth_token, int limit = 500, int offset = 0)
         {
             string favorites_url = baseUrl + "favorite/getUserFavorites";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("user_id", user_id);
-            _paramsValue.Add("type", type);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "user_id", user_id },
+                { "type", type },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(favorites_url, _paramsValue);
 
@@ -433,15 +486,17 @@ namespace QopenAPI
             }
         }
 
-        public Label LabelGet(string app_id, string label_id, string extra, int limit, int offset)
+        public Label LabelGet(string app_id, string label_id, string extra, int limit = 500, int offset = 0)
         {
             string label_url = baseUrl + "label/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("label_id", label_id);
-            _paramsValue.Add("extra", "albums");
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "label_id", label_id },
+                { "extra", extra },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(label_url, _paramsValue);
 
@@ -460,16 +515,18 @@ namespace QopenAPI
             }
         }
 
-        public Label LabelGetWithAuth(string app_id, string label_id, string extra, int limit, int offset, string user_auth_token)
+        public Label LabelGetWithAuth(string app_id, string label_id, string extra, string user_auth_token, int limit = 500, int offset = 0)
         {
             string label_url = baseUrl + "label/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("label_id", label_id);
-            _paramsValue.Add("extra", extra);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "label_id", label_id },
+                { "extra", extra },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(label_url, _paramsValue);
 
@@ -488,15 +545,17 @@ namespace QopenAPI
             }
         }
 
-        public Playlist PlaylistGet(string app_id, string playlist_id, string extra, int limit, int offset)
+        public Playlist PlaylistGet(string app_id, string playlist_id, string extra, int limit = 500, int offset = 0)
         {
             string playlist_url = baseUrl + "playlist/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("playlist_id", playlist_id);
-            _paramsValue.Add("extra", extra);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "playlist_id", playlist_id },
+                { "extra", extra },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
 
@@ -515,16 +574,18 @@ namespace QopenAPI
             }
         }
 
-        public Playlist PlaylistGetWithAuth(string app_id, string playlist_id, string extra, int limit, int offset, string user_auth_token)
+        public Playlist PlaylistGetWithAuth(string app_id, string user_auth_token, string playlist_id, string extra, int limit = 500, int offset = 0)
         {
             string playlist_url = baseUrl + "playlist/get";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("playlist_id", playlist_id);
-            _paramsValue.Add("extra", extra);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "playlist_id", playlist_id },
+                { "extra", extra },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
 
@@ -543,15 +604,17 @@ namespace QopenAPI
             }
         }
         
-        public SearchAlbumResult SearchAlbumsWithAuth(string app_id, string searchTerm, int limit, int offset, string user_auth_token)
+        public SearchAlbumResult SearchAlbumsWithAuth(string app_id, string user_auth_token, string searchTerm, int limit = 500, int offset = 0)
         {
             string playlist_url = baseUrl + "album/search";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("query", searchTerm);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "query", searchTerm },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
 
@@ -570,15 +633,17 @@ namespace QopenAPI
             }
         }
 
-        public SearchTrackResult SearchTracksWithAuth(string app_id, string searchTerm, int limit, int offset, string user_auth_token)
+        public SearchTrackResult SearchTracksWithAuth(string app_id, string user_auth_token, string searchTerm, int limit = 500, int offset = 0)
         {
             string playlist_url = baseUrl + "track/search";
-            Dictionary<string, string> _paramsValue = new Dictionary<string, string>();
-            _paramsValue.Add("app_id", app_id);
-            _paramsValue.Add("query", searchTerm);
-            _paramsValue.Add("limit", limit.ToString());
-            _paramsValue.Add("offset", offset.ToString());
-            _paramsValue.Add("user_auth_token", user_auth_token);
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "query", searchTerm },
+                { "limit", limit.ToString() },
+                { "offset", offset.ToString() },
+                { "user_auth_token", user_auth_token }
+            };
 
             string _parameterizedURL = CreateParameterizedQuery(playlist_url, _paramsValue);
 
@@ -609,12 +674,14 @@ namespace QopenAPI
             return url + "?" + _paramQuery.TrimEnd(new char[] { '&' });
         }
 
-        static string generateHash(string input)
-        {
-            MD5 md5Hasher = MD5.Create();
-            byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
-            return BitConverter.ToString(data).Replace("-", "");
-        }
+        // UNUSED
+        //
+        //static string generateHash(string input)
+        //{
+        //    MD5 md5Hasher = MD5.Create();
+        //    byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
+        //    return BitConverter.ToString(data).Replace("-", "");
+        //}
 
         static string GetMd5Hash(MD5 md5Hash, string input)
         {

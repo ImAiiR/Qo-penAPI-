@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using QopenAPI;
 
 namespace Qo_penAPI__Tester
@@ -8,8 +10,8 @@ namespace Qo_penAPI__Tester
     [TestClass]
     public class UnitTest1
     {
-        string _testUsername = "putemailfortestinghere";
-        string _testPassword = "putpasswordfortestinghere";
+        readonly string _testUsername = "putemailfortestinghere";
+        readonly string _testPassword = "putpasswordfortestinghere";
 
         #region Test Getting App ID
         [TestMethod]
@@ -28,7 +30,7 @@ namespace Qo_penAPI__Tester
             }
         }
         #endregion
-        
+
         #region Test Getting App Secret
         [TestMethod]
         public void App_Secret()
@@ -129,7 +131,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                search = service.SearchAlbumsWithAuth(appid.App_ID, "twenty one pilots", 50, 0, user.UserAuthToken);
+                search = service.SearchAlbumsWithAuth(appid.App_ID, user.UserAuthToken, "twenty one pilots", 50, 0);
             }
             catch
             {
@@ -157,7 +159,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                search = service.SearchTracksWithAuth(appid.App_ID, "twenty one pilots", 50, 0, user.UserAuthToken);
+                search = service.SearchTracksWithAuth(appid.App_ID, user.UserAuthToken, "twenty one pilots", 50, 0);
             }
             catch
             {
@@ -437,7 +439,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                favorites = service.FavoriteGetUserFavoritesWithAuth(appid.App_ID, user.UserInfo.Id.ToString(), "albums", 500, 0, user.UserAuthToken);
+                favorites = service.FavoriteGetUserFavoritesWithAuth(appid.App_ID, user.UserInfo.Id.ToString(), "albums", user.UserAuthToken, 500, 0);
             }
             catch
             {
@@ -465,7 +467,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                favorites = service.FavoriteGetUserFavoritesWithAuth(appid.App_ID, user.UserInfo.Id.ToString(), "tracks", 500, 0, user.UserAuthToken);
+                favorites = service.FavoriteGetUserFavoritesWithAuth(appid.App_ID, user.UserInfo.Id.ToString(), "tracks", user.UserAuthToken, 500, 0);
             }
             catch
             {
@@ -493,7 +495,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                favorites = service.FavoriteGetUserFavoritesWithAuth(appid.App_ID, user.UserInfo.Id.ToString(), "artists", 500, 0, user.UserAuthToken);
+                favorites = service.FavoriteGetUserFavoritesWithAuth(appid.App_ID, user.UserInfo.Id.ToString(), "artists", user.UserAuthToken, 500, 0);
             }
             catch
             {
@@ -521,7 +523,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                label = service.LabelGetWithAuth(appid.App_ID, "32535", "albums", 500, 0, user.UserAuthToken);
+                label = service.LabelGetWithAuth(appid.App_ID, "32535", "albums", user.UserAuthToken, 500, 0);
             }
             catch
             {
@@ -549,7 +551,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                playlist = service.PlaylistGetWithAuth(appid.App_ID, "14040852", "tracks", 500, 0, user.UserAuthToken);
+                playlist = service.PlaylistGetWithAuth(appid.App_ID, user.UserAuthToken, "14040852", "tracks", 500, 0);
             }
             catch
             {

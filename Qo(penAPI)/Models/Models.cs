@@ -219,7 +219,7 @@ namespace QopenAPI
         public object Version { get; set; }
 
         [JsonProperty("released_at")]
-        public long ReleasedAt { get; set; }
+        public long? ReleasedAt { get; set; }
 
         [JsonProperty("release_date_original")]
         public string ReleaseDateOriginal { get; set; }
