@@ -271,14 +271,14 @@ namespace QopenAPI
             }
         }
 
-        public Artist ArtistGet(string app_id, string album_id, int limit = 500, int offset = 0)
+        public Artist ArtistGet(string app_id, string album_id, string extra, int limit = 500, int offset = 0)
         {
             string artist_url = baseUrl + "artist/get";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>
             {
                 { "app_id", app_id },
                 { "artist_id", album_id },
-                { "extra", "albums%2Calbums_with_last_release" },
+                { "extra", extra },
                 { "limit", limit.ToString() },
                 { "offset", offset.ToString() },
                 { "sort", "release_desc" }
@@ -301,14 +301,14 @@ namespace QopenAPI
             }
         }
 
-        public Artist ArtistGetWithAuth(string app_id, string album_id, string user_auth_token, int limit = 500, int offset = 0)
+        public Artist ArtistGetWithAuth(string app_id, string album_id, string user_auth_token, string extra, int limit = 500, int offset = 0)
         {
             string artist_url = baseUrl + "artist/get";
             Dictionary<string, string> _paramsValue = new Dictionary<string, string>
             {
                 { "app_id", app_id },
                 { "artist_id", album_id },
-                { "extra", "albums%2Calbums_with_last_release" },
+                { "extra", extra },
                 { "limit", limit.ToString() },
                 { "offset", offset.ToString() },
                 { "sort", "release_desc" },
@@ -325,6 +325,41 @@ namespace QopenAPI
 
                 //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
                 return artist;
+            }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine("shit aint work");
+                return null;
+            }
+        }
+
+        public ReleasesList GetReleaseListWithAuth(string app_id, string artistId, string release_type, string user_auth_token, 
+                                                   string sort = "release_date", int track_size = 10, 
+                                                   int limit = 100, int offset = 0)
+        {
+            string artist_url = baseUrl + "artist/getReleasesList";
+            Dictionary<string, string> _paramsValue = new Dictionary<string, string>
+            {
+                { "app_id", app_id },
+                { "artist_id", artistId },
+                { "release_type" , release_type },
+                { "track_size" , track_size.ToString()  },
+                { "offset", offset.ToString() },
+                { "limit", limit.ToString() },
+                { "sort", sort },
+                { "user_auth_token", user_auth_token }
+            };
+
+            string _parameterizedURL = CreateParameterizedQuery(artist_url, _paramsValue);
+
+            var response = QoHttpClient.GetAsync(_parameterizedURL);
+            if (response.Result.IsSuccessStatusCode)
+            {
+                string result = response.Result.Content.ReadAsStringAsync().Result;
+                ReleasesList list = JsonConvert.DeserializeObject<ReleasesList>(result);
+
+                //System.Diagnostics.Trace.WriteLine(result);//           <-- Use to view API response
+                return list;
             }
             else
             {

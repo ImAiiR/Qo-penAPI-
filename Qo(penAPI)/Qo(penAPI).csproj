@@ -41,6 +41,16 @@
     <Compile Include="Models\Album.cs" />
     <Compile Include="Models\Models.cs" />
     <Compile Include="Models\PlaylistResult.cs" />
+    <Compile Include="Models\ReleaseList\Release.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseArtist.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseAudioInfo.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseDates.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseItem.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseList.cs" />
+    <Compile Include="Models\ReleaseList\ReleasePhysicalSupport.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseRights.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseTrack.cs" />
+    <Compile Include="Models\ReleaseList\ReleaseTrackList.cs" />
     <Compile Include="Qo%28penAPI%29.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\SearchAlbumResult.cs" />

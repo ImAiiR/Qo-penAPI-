@@ -107,7 +107,7 @@ namespace Qo_penAPI__Tester
             try
             {
                 appid = service.GetAppID();
-                artist = service.ArtistGet(appid.App_ID, "3131928");
+                artist = service.ArtistGet(appid.App_ID, "3131928", "albums%2Calbums_with_last_release");
             }
             catch
             {
@@ -187,7 +187,7 @@ namespace Qo_penAPI__Tester
             {
                 appid = service.GetAppID();
                 user = service.Login(appid.App_ID, _testUsername, _testPassword, null);
-                artist = service.ArtistGetWithAuth(appid.App_ID, "45874", user.UserAuthToken);
+                artist = service.ArtistGetWithAuth(appid.App_ID, "45874", user.UserAuthToken, "albums%2Calbums_with_last_release");
             }
             catch
             {
