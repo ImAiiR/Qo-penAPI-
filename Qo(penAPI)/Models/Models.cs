@@ -75,6 +75,12 @@ namespace QopenAPI
 
         [JsonProperty("tracks")]
         public Tracks Tracks { get; set; }
+
+        [JsonProperty("image_rectangle")]
+        public List<string> ImageRectangle { get; set; }
+
+        [JsonProperty("image_rectangle_mini")]
+        public List<string> ImageRectangleMini { get; set; }
     }
 
     public class Genre
